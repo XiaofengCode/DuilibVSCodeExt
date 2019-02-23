@@ -1,0 +1,53 @@
+{
+  "name": "duixml",
+  "displayName": "Duilib skin xml tool",
+  "publisher": "小峰惭岳",
+  "description": "Duilib皮肤编辑扩展，有问题请反馈到zhouchaofeng@126.com",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.31.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "dui",
+        "aliases": [
+          "dui",
+          "dui"
+        ],
+        "extensions": [
+          "dui",
+          "xml"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "dui",
+        "scopeName": "source.dui",
+        "path": "./syntaxes/dui.tmLanguage.json"
+      }
+    ]
+  },
+  "activationEvents": [
+    "onLanguage:dui",
+    "onLanguage:xml"
+  ],
+  "main": "extension",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+      "url": "git@github.com:kbkb1216/DuiXml.git"
+  },
+  "author": "小峰惭岳",
+  "license": "GPL",
+  "dependencies": {
+    "fs": "0.0.1-security",
+    "xml2js": "^0.4.19"
+  }
+}
