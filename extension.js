@@ -93,8 +93,8 @@ var docText = "";
  * @param {*} context 
  */
 function provideCompletionItems(document, position, token, context) {
-    if (context.triggerCharacter == "<")
-    {
+    console.log(context.triggerCharacter);
+    if (context.triggerCharacter == "<"){
         // 只截取到光标位置为止，防止一些特殊情况
 	    const line		= document.lineAt(position);
         const lineText = line.text.substring(0, position.character);
@@ -102,6 +102,25 @@ function provideCompletionItems(document, position, token, context) {
         if (/<$/.test(lineText)) {
             curCtrol = "";
             console.log(lineText);
+            var ret = [];
+            const lastText = line.text.substring(position.character);
+            var endTag = ">";
+            if (/\s*>.*/.test(lastText)){
+                endTag = "";
+            }
+            controls.forEach(dep => {
+                //dep = controls[i];
+                var completionItem = new vscode.CompletionItem(dep + "></" + dep + ">");
+                completionItem.kind = vscode.CompletionItemKind.Snippet;
+                completionItem.insertText = dep + ">\r\n\t\r\n</" + dep + endTag;
+                ret.push(completionItem);
+                var completionItem = new vscode.CompletionItem(dep + "/>");
+                completionItem.kind = vscode.CompletionItemKind.Snippet;
+                completionItem.insertText = dep + "/" + endTag;
+                ret.push(completionItem);
+                
+            });
+            return ret;
             return controls.map(dep => {
                 // vscode.CompletionItemKind 表示提示的类型
                 return new vscode.CompletionItem(dep, vscode.CompletionItemKind.Field);
@@ -109,8 +128,26 @@ function provideCompletionItems(document, position, token, context) {
         }
         return;
     }
-    if (context.triggerCharacter == " ")
-    {
+    if (context.triggerCharacter == ">") {
+        var curTextRange = new vscode.Range(new vscode.Position(0, 0), position);
+        docText = document.getText(curTextRange);
+        var rec = /[\s\S]*<\s*(\w+)\s*(\s*([\w-]+)\s*=\s*((\"[^\"]*\")*)|('[^\']*')*)*\s*>$/gi;
+        var control = rec.exec(docText);
+        if (control.length > 2) {
+            curCtrol = control[1];
+            var ret = [];
+            var completionItem = new vscode.CompletionItem("</" + curCtrol + ">");
+            completionItem.kind = vscode.CompletionItemKind.Snippet;
+            completionItem.insertText = "\r\n\t\r\n</" + curCtrol + ">";
+            ret.push(completionItem);
+
+            //ret.push(new vscode.CompletionItem("</" + curCtrol + ">", vscode.CompletionItemKind.Field));
+            return ret;
+        }
+        return;
+        
+    }
+    if (context.triggerCharacter == " "){
         var curTextRange = new vscode.Range(new vscode.Position(0, 0), position);
         docText = document.getText(curTextRange);
         var rec = /[\s\S]*<\s*(\w+)\s*(\s*([\w-]+)\s*=\s*((\"[^\"]*\")*)|('[^\']*')*)*\s*$/gi;
@@ -123,15 +160,17 @@ function provideCompletionItems(document, position, token, context) {
             ctl = curCtrol;
             while (ctl.length > 0){
                 var x = controlsAttrs.Controls[ctl];
-                var items = x[0].Attribute.map(dep => {
-                    // vscode.CompletionItemKind 表示提示的类型
-                    var completionItem = new vscode.CompletionItem(dep.$.name);
-                    completionItem.kind = vscode.CompletionItemKind.Snippet;
-                    completionItem.detail = dep.$.comment;
-                    completionItem.insertText = dep.$.name + "=\"" + dep.$.default + "\"";
-                    return completionItem;
-                });
-                res = res.concat(items);
+                if ("Attribute" in x[0]) {
+                    var items = x[0].Attribute.map(dep => {
+                        // vscode.CompletionItemKind 表示提示的类型
+                        var completionItem = new vscode.CompletionItem(dep.$.name);
+                        completionItem.kind = vscode.CompletionItemKind.Snippet;
+                        completionItem.detail = dep.$.comment;
+                        completionItem.insertText = dep.$.name + "=\"" + dep.$.default + "\"";
+                        return completionItem;
+                    });
+                    res = res.concat(items);                    
+                }
                 ctl = x[0].$.parent;
             }
             return res;
@@ -190,6 +229,9 @@ function provideCompletionLua(document, position, token, context) {
 function resolveCompletionItem(item, token) {
 	return null;
 }
+function provideCompletionResult(document, position, token, context){
+
+}
 exports.activate = function(context) {
     console.log('dui扩展激活！');
     fs.readFile(context.extensionPath + "/DuiLib.xml", "utf-8", function(errors, content){
@@ -219,20 +261,9 @@ exports.activate = function(context) {
                 provideCompletionItems,
                 resolveCompletionItem
             },
-            '<'
-        )
-    );
-	context.subscriptions.push(
-        vscode.languages.registerCompletionItemProvider(
-            [
-                'dui',
-                'xml'
-            ],
-            {
-                provideCompletionItems,
-                resolveCompletionItem
-            },
-            ' '
+            "<",
+            ">",
+            " "
         )
     );
 };

@@ -9,8 +9,7 @@
     "brackets": [
         ["{", "}"],
         ["[", "]"],
-        ["(", ")"],
-        ["<", ">"]
+        ["(", ")"]
     ],
     // symbols that are auto closed when typing
     "autoClosingPairs": [
@@ -20,8 +19,10 @@
         ["\"", "\""],
         ["'", "'"]
     ],
+    //"increaseIndentPattern": "\\s*<\\s*(\\w+)\\s*(\\s*\\w+\\s*=\\s*((\"[^\\\"]*\")*)|('[^']*')*)*\\s*>\\s*"
     "indentationRules": {
-        "increaseIndentPattern": "<\\s*[\\w-]*\\s*(\\s*[\\w-]*\\s*=\\s*((\"[^\"]+\")*)|('[^']+')*)*\\s*>"
+        "increaseIndentPattern": "\\s*<\\s*(\\w+)\\s*(\\s*\\w+\\s*=\\s*((\"[^\\\"]*\")*)|('[^']*')*)*\\s*>\\s*$",
+        "decreaseIndentPattern": "\\s*</\\s*(\\w+)\\s*>\\s*$"
     },
     //"autoCloseBefore": ";:.,=}])> \n\t",
     // symbols that that can be used to surround a selection

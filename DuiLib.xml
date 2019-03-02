@@ -421,4 +421,7 @@
 		<Attribute name="name" default="" type="STRING" comment="图片文件路径或资源ID"/>
 		<Attribute name="restype" default="0" type="INT" comment="name如果是资源ID，该项表示资源类型"/>
 	</Image>
+	<Event/>
+	<Click/>
+	<Script/>
 </Controls>
